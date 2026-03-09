@@ -62,4 +62,7 @@ public static class Search {
         // Search in the lower half before index middle
         return 1 + SearchSorted2(data, target, start, middle - 1);
     }
+
+    
 }
+
