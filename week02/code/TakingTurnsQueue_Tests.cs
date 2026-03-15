@@ -8,10 +8,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 public class TakingTurnsQueueTests
 {
     [TestMethod]
+    
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3) and
     // run until the queue is empty
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
     // Defect(s) Found: 
+    //The queue implementation did not correctly decrease the number of turns
+    // when a person was dequeued. Because of this, players were sometimes
+    // re-enqueued incorrectly or too many times. The rotation order did not
+    // match the expected result and the queue did not empty at the correct time.
+
     public void TestTakingTurnsQueue_FiniteRepetition()
     {
         var bob = new Person("Bob", 2);
@@ -44,6 +50,10 @@ public class TakingTurnsQueueTests
     // After running 5 times, add George with 3 turns.  Run until the queue is empty.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, George, Sue, Tim, George, Tim, George
     // Defect(s) Found: 
+    // The queue implementation did not correctly handle adding a new person while
+    // the queue was already running. The new player was not inserted in the correct
+    // position in the circular queue, causing the order of players returned by
+    // GetNextPerson() to differ from the expected sequence.
     public void TestTakingTurnsQueue_AddPlayerMidway()
     {
         var bob = new Person("Bob", 2);
@@ -86,6 +96,10 @@ public class TakingTurnsQueueTests
     // Run 10 times.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
     // Defect(s) Found: 
+    // Players with 0 turns should be treated as having infinite turns.
+    // The implementation incorrectly modified the turn value or failed
+    // to reinsert the player into the queue correctly. Infinite players
+    // should remain in the queue without their turn count being changed.
     public void TestTakingTurnsQueue_ForeverZero()
     {
         var timTurns = 0;
@@ -113,10 +127,13 @@ public class TakingTurnsQueueTests
     }
 
     [TestMethod]
-    // Scenario: Create a queue with the following people and turns: Tim (Forever), Sue (3)
+    // Scen1ario: Create a queue with the following people and turns: Tim (Forever), Sue (3)
     // Run 10 times.
     // Expected Result: Tim, Sue, Tim, Sue, Tim, Sue, Tim, Tim, Tim, Tim
     // Defect(s) Found: 
+    // Players with negative turns should also be treated as having infinite turns.
+    // The implementation did not correctly handle negative values and sometimes
+    // changed the turn value or failed to keep the player in the queue.
     public void TestTakingTurnsQueue_ForeverNegative()
     {
         var timTurns = -3;
@@ -144,6 +161,9 @@ public class TakingTurnsQueueTests
     // Scenario: Try to get the next person from an empty queue
     // Expected Result: Exception should be thrown with appropriate error message.
     // Defect(s) Found: 
+    // When attempting to retrieve a player from an empty queue,
+    // the implementation did not throw the required InvalidOperationException
+    // with the correct error message "No one in the queue.".
     public void TestTakingTurnsQueue_Empty()
     {
         var players = new TakingTurnsQueue();
