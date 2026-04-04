@@ -192,7 +192,7 @@ public class LinkedList : IEnumerable<int>
     /// <summary>
     /// Yields all values in the linked list
     /// </summary>
-public IEnumerator IEnumerable.GetEnumerator()
+ IEnumerator IEnumerable.GetEnumerator()
     {
         // call the generic version of the method
         return this.GetEnumerator();
